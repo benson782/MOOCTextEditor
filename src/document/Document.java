@@ -48,13 +48,58 @@ public abstract class Document {
 	// You will probably NOT need to add a countWords or a countSentences method
 	// here.  The reason we put countSyllables here because we'll use it again
 	// next week when we implement the EfficientDocument class.
+	/**
+	 * Count the number of syllables in a word
+	 * @param word The word to count the syllables
+	 * @return The number of syllables in the word
+	 */
 	protected int countSyllables(String word)
 	{
 		// TODO: Implement this method so that you can call it from the 
 	    // getNumSyllables method in BasicDocument (module 1) and 
 	    // EfficientDocument (module 2).
-	    return 0;
+		String wordLower = word.toLowerCase();
+		int count = 0;
+		boolean prevIsVowel = false;
+		
+		for (int i = 0; i < wordLower.length(); i++) {
+			
+			boolean currIsVowel= isVowel(wordLower.charAt(i));
+			if (currIsVowel == true && prevIsVowel == false) {
+				count++;
+			}
+			prevIsVowel = currIsVowel;
+		}
+		
+		// check for lone 'e' at the end of the word
+		// if it is, subtract 1 from the count
+		if (wordLower.charAt(wordLower.length() - 1) == 'e' &&
+				!isVowel(wordLower.charAt(wordLower.length() - 2))) {
+			count--;			
+		}
+		
+		// set count to 1 if 0
+		if (count == 0) {
+			count = 1;
+		}
+		
+	    return count;
 	}
+	
+	/**
+	 * Determines if the character is a vowel
+	 * @param c The character to check
+	 * @return true, if the character is a vowel. false, if it is not.
+	 */
+	private boolean isVowel(char c) {
+		String vowels = "aeiouy";
+		if (vowels.indexOf(c) != -1) {
+			// character is a vowel
+			return true;
+		}
+		return false;
+	}
+	
 	
 	/** A method for testing
 	 * 
@@ -117,7 +162,10 @@ public abstract class Document {
 	public double getFleschScore()
 	{
 	    // TODO: Implement this method
-	    return 0.0;
+		double wordsOverSentences = getNumWords() / (double) getNumSentences();
+		double syllablesOverWords = getNumSyllables() / (double) getNumWords();
+		return (double) (206.835 - (1.015 * wordsOverSentences) - (84.6 * syllablesOverWords));
+	    //return 206.835 - (1.1015 * (getNumWords() / (double) getNumSentences())) - (84.6 * (getNumSyllables() / (double) getNumWords()));
 	}
 	
 	

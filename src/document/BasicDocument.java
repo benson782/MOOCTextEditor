@@ -30,7 +30,7 @@ public class BasicDocument extends Document
 	{
 		//TODO: Implement this method.  See the Module 1 support videos 
 	    // if you need help.
-	    return 0;
+	    return getTokens("[a-zA-Z]+").size();
 	}
 	
 	/**
@@ -46,7 +46,24 @@ public class BasicDocument extends Document
 	{
 	    //TODO: Implement this method.  See the Module 1 support videos 
         // if you need help.
-        return 0;
+		List<String> sentences= getTokens("[.?!]+");
+		int count = sentences.size();
+		
+		// count of 0
+		String textTrimmed = getText().trim();
+		if (count == 0) {
+			// set count to 1 if there is something in the text besides spaces
+			count = (textTrimmed.length() > 0) ? 1 : 0;
+		}
+		else {
+			// check last set of characters doesn't have a punctuation
+			String lastPunctuation = sentences.get(count - 1);
+			int index = textTrimmed.lastIndexOf(lastPunctuation);
+			if (index < textTrimmed.length()- lastPunctuation.length()) {
+				count++;
+			}
+		}
+        return count;
 	}
 	
 	/**
@@ -62,7 +79,15 @@ public class BasicDocument extends Document
 	{
 	    //TODO: Implement this method.  See the Module 1 support videos 
         // if you need help.
-        return 0;
+		List<String>  words = getTokens("[a-zA-Z]+");
+		int count = 0;
+		
+		// count syllables for each word
+		for (String word : words) {
+			count += countSyllables(word);
+		}
+		
+        return count;
 	}
 	
 	
