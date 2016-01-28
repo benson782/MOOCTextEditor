@@ -2,6 +2,8 @@ package document;
 
 import java.util.List;
 
+import com.sun.prism.image.CompoundTexture;
+
 /** 
  * A class that represents a text document
  * It does one pass through the document to count the number of syllables, words, 
@@ -42,9 +44,27 @@ public class EfficientDocument extends Document {
 		// Provide this first line in the starter code.  
 		// Words are only strings of letters.  No numbers.
 		List<String> tokens = getTokens("[!?.]+|[a-zA-Z]+");
+		numWords = 0;
+		numSentences = 0;
+		numSyllables = 0;
 		
-		// TODO: Finish this method.  Remember the countSyllables method from 
+		// TODO: Finish this method.  Remember the countSyllables method from
 		// Document.  That will come in handy here.
+		for (String tok : tokens) {
+			if (isWord(tok)) {
+				numWords++;
+				numSyllables += countSyllables(tok);
+			}
+			else {
+				numSentences++;
+			}
+		}
+		
+		// case where the last sentence does not end in a sentence-ending punctuation
+		if (tokens.size() > 0 && isWord(tokens.get(tokens.size() - 1))){
+			numSentences++;
+		}
+		
 	}
 	
 	
@@ -58,7 +78,7 @@ public class EfficientDocument extends Document {
 	@Override
 	public int getNumWords() {
 		//TODO: write this method.  Hint: It's simple
-	    return 0;
+	    return numWords;
 	}
 
 	/**
@@ -72,7 +92,7 @@ public class EfficientDocument extends Document {
 	@Override
 	public int getNumSentences() {
         //TODO: write this method.  Hint: It's simple
-        return 0;
+        return numSentences;
 	}
 
 	/**
@@ -86,7 +106,7 @@ public class EfficientDocument extends Document {
 	@Override
 	public int getNumSyllables() {
         //TODO: write this method.  Hint: It's simple
-        return 0;
+        return numSyllables;
 	}
 	
 	// Can be used for testing
