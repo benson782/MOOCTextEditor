@@ -30,13 +30,14 @@ public class DocumentBenchmarking {
 		// You can play around with this.
 		int numSteps = 20;
 		
-		// THe number of characters to start with. 
+		// The number of characters to start with. 
 		// You can play around with this.
 		int start = 50000;
 		
 		// TODO: Fill in the rest of this method so that it runs two loops
 		// and prints out timing results as described in the assignment 
 		// instructions.
+		System.out.println("NumberOfChars\tBasicTime\tEfficientTime");
 		for (int numToCheck = start; numToCheck < numSteps*increment + start; 
 				numToCheck += increment)
 		{
@@ -59,7 +60,32 @@ public class DocumentBenchmarking {
 			 *      (on the same line as the first print statement) followed by a newline (\n) 
 			 */  
 			 
+			System.out.print(numToCheck + "\t");
+			String text = getStringFromFile(textfile, numToCheck);
+			
+			// BasicDocument trials
+			long basicStart = System.nanoTime();
+			for (int i = 0; i < trials; i++) {
+				BasicDocument bd = new BasicDocument(text);
+				double fleschScore = bd.getFleschScore();
+			}
+			long basicEnd = System.nanoTime();
+			double basicTotalTimeSec = (basicEnd - basicStart) / 1000000000.0;
+			System.out.print(basicTotalTimeSec + "\t");
+			
+			// EfficientDocument trials
+			long effStart = System.nanoTime();
+			for (int i = 0; i < trials; i++) {
+				EfficientDocument ed = new EfficientDocument(text);
+				double fleschScore = ed.getFleschScore();
+			}
+			long effEnd = System.nanoTime();
+			double effTotalTimeSec = (effEnd - effStart) / 1000000000.0;
+			System.out.print(effTotalTimeSec + "\n");
+			
 		}
+		
+		System.out.println("\n\nDone");
 	
 	}
 	
