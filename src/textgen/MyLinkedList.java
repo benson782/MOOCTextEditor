@@ -16,7 +16,11 @@ public class MyLinkedList<E> extends AbstractList<E> {
 
 	/** Create a new empty LinkedList */
 	public MyLinkedList() {
-		// TODO: Implement this method
+		size = 0;
+		head = new LLNode<E>(null);
+		tail = new LLNode<E>(null);
+		head.next = tail;
+		tail.prev = head;
 	}
 
 	/**
@@ -25,16 +29,30 @@ public class MyLinkedList<E> extends AbstractList<E> {
 	 */
 	public boolean add(E element ) 
 	{
-		// TODO: Implement this method
-		return false;
+		// Check element is not null
+		if (element == null) {
+			throw new NullPointerException();
+		}
+		
+		LLNode<E> nodeToAdd = new LLNode<E>(element, tail.prev, tail);
+		tail.prev.next = nodeToAdd;
+		tail.prev = nodeToAdd ; //update the sentinel node's prev must be last;
+		size++;
+		return true;
 	}
 
 	/** Get the element at position index 
 	 * @throws IndexOutOfBoundsException if the index is out of bounds. */
 	public E get(int index) 
 	{
-		// TODO: Implement this method.
-		return null;
+		// Check index is valid
+		if (!isIndexValid(index)) {
+			throw new IndexOutOfBoundsException();
+		}
+		
+		LLNode<E> node = getNodeAtIndex(index);
+		
+		return node.data;
 	}
 
 	/**
@@ -44,15 +62,31 @@ public class MyLinkedList<E> extends AbstractList<E> {
 	 */
 	public void add(int index, E element ) 
 	{
-		// TODO: Implement this method
+		// Check element is not null
+		if (element == null) {
+			throw new NullPointerException();
+		}
+		
+		// Check index is valid
+		if (!isIndexValid(index)) {
+			if (index == size && size == 0) {/* Do Nothing */}
+			else {
+				throw new IndexOutOfBoundsException();
+			}
+		}
+		
+		LLNode<E> nodeAtIndex = getNodeAtIndex(index);
+		LLNode<E> nodeToAdd = new LLNode<E>(element, nodeAtIndex.prev, nodeAtIndex);
+		nodeAtIndex.prev.next = nodeToAdd;
+		nodeAtIndex.prev = nodeToAdd;
+		size++;
 	}
 
 
 	/** Return the size of the list */
 	public int size() 
 	{
-		// TODO: Implement this method
-		return -1;
+		return size;
 	}
 
 	/** Remove a node at the specified index and return its data element.
@@ -63,8 +97,24 @@ public class MyLinkedList<E> extends AbstractList<E> {
 	 */
 	public E remove(int index) 
 	{
-		// TODO: Implement this method
-		return null;
+		// Check index is valid
+		if (!isIndexValid(index)) {
+			throw new IndexOutOfBoundsException();
+		}
+		
+		// get the node to remove
+		LLNode<E> nodeToRemove = getNodeAtIndex(index);
+		
+		// change previous node's next node to nodeToRemove's next node
+		nodeToRemove.prev.next = nodeToRemove.next;
+		
+		// change next node's prev node to nodeToRemove's prev node
+		nodeToRemove.next.prev = nodeToRemove.prev;
+		
+		// update size
+		size--;
+		
+		return nodeToRemove.data;
 	}
 
 	/**
@@ -73,12 +123,40 @@ public class MyLinkedList<E> extends AbstractList<E> {
 	 * @param element The new element
 	 * @return The element that was replaced
 	 * @throws IndexOutOfBoundsException if the index is out of bounds.
+	 * @throws NullPointerException if the element is null.
 	 */
 	public E set(int index, E element) 
 	{
-		// TODO: Implement this method
-		return null;
-	}   
+		// Check index is valid
+		if (!isIndexValid(index)) {
+			throw new IndexOutOfBoundsException();
+		}
+		
+		// Check element is not null
+		if (element == null) {
+			throw new NullPointerException();
+		}
+		
+		// set the new element
+		LLNode<E> nodeToReplace = getNodeAtIndex(index);
+		E oldData = nodeToReplace.getData();
+		nodeToReplace.setData(element);
+		return oldData;
+	}
+	
+	/** Validates the index is valid  **/
+	private boolean isIndexValid(int index) {
+		return (index < 0 || index >= size) ? false : true;
+ 	}
+	
+	/** Get a node at the index **/
+	private LLNode<E> getNodeAtIndex(int index) {
+		LLNode<E> nodeCurr = head;
+		for(int i = index; i >= 0; i--) {
+			nodeCurr = nodeCurr.next;
+		}
+		return nodeCurr;
+	}
 }
 
 class LLNode<E> 
@@ -96,5 +174,18 @@ class LLNode<E>
 		this.prev = null;
 		this.next = null;
 	}
-
+	
+	public LLNode(E e, LLNode<E> prev, LLNode<E> next) {
+		this.data = e;
+		this.prev = prev;
+		this.next = next;
+	}
+	
+	public E getData() {
+		return data;
+	}
+	
+	public void setData(E e) {
+		data = e;
+	}
 }
