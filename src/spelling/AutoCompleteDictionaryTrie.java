@@ -1,7 +1,9 @@
 package spelling;
 
 import java.util.List;
+import java.util.Queue;
 import java.util.Set;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -28,7 +30,24 @@ public class AutoCompleteDictionaryTrie implements  Dictionary, AutoComplete {
 	 * That is, you should convert the string to all lower case as you insert it. */
 	public boolean addWord(String word)
 	{
-	    //TODO: Implement this method.
+		TrieNode currNode = root;
+		String wordLower = word.toLowerCase();
+
+		// create the nodes for each letter in the word
+		for (char c : wordLower.toCharArray()) {
+			TrieNode childNode = currNode.insert(c);
+			if (childNode == null) {
+				childNode = currNode.getChild(c);
+			}
+			currNode = childNode;
+		}
+		
+		// set the end of the node as a word
+		if (!currNode.endsWord()) {
+			currNode.setEndsWord(true);
+			size++;
+			return true;
+		}
 	    return false;
 	}
 	
@@ -38,8 +57,7 @@ public class AutoCompleteDictionaryTrie implements  Dictionary, AutoComplete {
 	 */
 	public int size()
 	{
-	    //TODO: Implement this method
-	    return 0;
+	    return size;
 	}
 	
 	
@@ -47,7 +65,26 @@ public class AutoCompleteDictionaryTrie implements  Dictionary, AutoComplete {
 	@Override
 	public boolean isWord(String s) 
 	{
-	    // TODO: Implement this method
+		TrieNode currNode = root;
+		String wordLower = s.toLowerCase();
+
+		// traverse down the treed
+		for (char c : wordLower.toCharArray()) {
+			TrieNode childNode = currNode.getChild(c);
+			
+			// reached the end of the tree
+			if (childNode == null) {
+				return false;
+			}
+			
+			// found the word
+			if (childNode.endsWord() && childNode.getText().equals(wordLower)) {
+				return true;
+			}
+			
+			// continue down the tree
+			currNode = childNode;
+		}
 		return false;
 	}
 
@@ -76,7 +113,44 @@ public class AutoCompleteDictionaryTrie implements  Dictionary, AutoComplete {
     	 //       Add all of its child nodes to the back of the queue
     	 // Return the list of completions
     	 
-         return null;
+    	 List<String> completions = new ArrayList<>();
+    	 String prefixLower = prefix.toLowerCase();
+    	 
+    	 // verify inputs
+    	 if (numCompletions <= 0) {
+    		 return completions;
+    	 }
+    	 
+    	 // find the stem
+    	 TrieNode stemNode = root;
+    	 for(char c : prefixLower.toCharArray()) {
+    		 TrieNode childNode = stemNode.getChild(c);
+ 			if (childNode == null) {
+ 				return completions;
+ 			}
+ 			stemNode = childNode;
+    	 }
+    	 
+    	 // search for completions
+    	 int completionsFound = 0;
+    	 Queue<TrieNode> toVisit = new LinkedList<>();
+    	 toVisit.add(stemNode);
+    	 while(!toVisit.isEmpty() && completionsFound < numCompletions) {
+    		 TrieNode curr = toVisit.remove();
+    		 
+    		 // add to completion list if a word
+    		 if (curr.endsWord()) {
+    			 completions.add(curr.getText());
+    			 completionsFound++;
+    		 }
+    		 
+    		 // add children to queue
+    		 for (char c : curr.getValidNextCharacters()) {
+    			 toVisit.add(curr.getChild(c));
+    		 }
+    	 }
+    	 
+         return completions;
      }
 
  	// For debugging
